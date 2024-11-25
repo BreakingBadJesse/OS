@@ -1,110 +1,120 @@
-// Source code is decompiled from a .class file using FernFlower decompiler.
 import java.util.Random;
 import java.util.Scanner;
 
-public class BankersAlgorithm {
-   public BankersAlgorithm() {
-   }
+public class Practise {
+    public static void main(String args[]) {
+        Scanner sc = new Scanner(System.in);
+        Random rd = new Random();
 
-   public static void main(String[] var0) {
-      Scanner var1 = new Scanner(System.in);
-      Random var2 = new Random();
-      System.out.print("Enter number of processes: ");
-      int var3 = var1.nextInt();
-      System.out.print("Enter number of resources: ");
-      int var4 = var1.nextInt();
-      int[][] var5 = new int[var3][var4];
-      int[][] var6 = new int[var3][var4];
-      int[][] var7 = new int[var3][var4];
-      int[] var8 = new int[var4];
-      System.out.println("Max matrix (generated randomly):");
+        System.out.println("Enter the no. of processes:");
+        int n = sc.nextInt();
+        System.out.println("Enter the no. of resources:");
+        int m = sc.nextInt();
 
-      int var9;
-      int var10;
-      for(var9 = 0; var9 < var3; ++var9) {
-         for(var10 = 0; var10 < var4; ++var10) {
-            var5[var9][var10] = var2.nextInt(10) + 1;
-            System.out.print(var5[var9][var10] + " ");
-         }
+        int max[][] = new int[n][m];
+        int allocated[][] = new int[n][m];
+        int need[][] = new int[n][m];
+        int avail[] = new int[m];
 
-         System.out.println();
-      }
-
-      System.out.println("Allocation matrix (generated randomly):");
-
-      for(var9 = 0; var9 < var3; ++var9) {
-         for(var10 = 0; var10 < var4; ++var10) {
-            var6[var9][var10] = var2.nextInt(var5[var9][var10] + 1);
-            System.out.print(var6[var9][var10] + " ");
-         }
-
-         System.out.println();
-      }
-
-      System.out.println("Available resources (generated randomly):");
-
-      for(var9 = 0; var9 < var4; ++var9) {
-         var8[var9] = var2.nextInt(10) + 1;
-         System.out.print(var8[var9] + " ");
-      }
-
-      System.out.println();
-      System.out.println("Need Matrix:");
-
-      for(var9 = 0; var9 < var3; ++var9) {
-         for(var10 = 0; var10 < var4; ++var10) {
-            var7[var9][var10] = var5[var9][var10] - var6[var9][var10];
-            System.out.print(var6[var9][var10] + " ");
-         }
-
-         System.out.println();
-      }
-
-      boolean[] var18 = new boolean[var3];
-      int[] var19 = new int[var4];
-      System.arraycopy(var8, 0, var19, 0, var4);
-      int[] var11 = new int[var3];
-      int var12 = 0;
-      boolean var13 = true;
-
-      while(var12 < var3) {
-         boolean var14 = false;
-
-         for(int var15 = 0; var15 < var3; ++var15) {
-            if (!var18[var15]) {
-               int var16;
-               for(var16 = 0; var16 < var4 && var7[var15][var16] <= var19[var16]; ++var16) {
-               }
-
-               if (var16 == var4) {
-                  for(int var17 = 0; var17 < var4; ++var17) {
-                     var19[var17] += var6[var15][var17];
-                  }
-
-                  var11[var12++] = var15;
-                  var18[var15] = true;
-                  var14 = true;
-               }
+        System.out.println("Max resources matrix (generated randomly):");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                max[i][j] = rd.nextInt(10) + 1;
+                System.out.print(max[i][j] + " ");
             }
-         }
+            System.out.println();
+        }
 
-         if (!var14) {
-            var13 = false;
-            break;
-         }
-      }
+        System.out.println("Allocated resources matrix (generated randomly):");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                allocated[i][j] = rd.nextInt(max[i][j] + 1);
+                System.out.print(allocated[i][j] + " ");
+            }
+            System.out.println();
+        }
 
-      if (var13) {
-         System.out.println("System is in a safe state.\nSafe sequence is: ");
+        System.out.println("Need matrix (calculated):");
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                need[i][j] = max[i][j] - allocated[i][j];
+                System.out.print(need[i][j] + " ");
+            }
+            System.out.println();
+        }
 
-         for(int var20 = 0; var20 < var3; ++var20) {
-            System.out.print(var11[var20] + " ");
-         }
+        int totalRes[] = new int[m];
+        System.out.println("Total resources (generated randomly):");
+        for (int j = 0; j < m; j++) {
+            int totalAlloc = 0;
+            for (int i = 0; i < n; i++) {
+                totalAlloc += allocated[i][j];
+            }
+            totalRes[j] = totalAlloc + rd.nextInt(10) + 1; // Ensure total >= allocated
+            System.out.print(totalRes[j] + " ");
+        }
+        System.out.println();
 
-         System.out.println();
-      } else {
-         System.out.println("System is not in a safe state.");
-      }
+        System.out.println("Available resources (calculated):");
+        for (int j = 0; j < m; j++) {
+            int totalAlloc = 0;
+            for (int i = 0; i < n; i++) {
+                totalAlloc += allocated[i][j];
+            }
+            avail[j] = totalRes[j] - totalAlloc;
+            System.out.print(avail[j] + " ");
+        }
+        System.out.println();
 
-   }
+        // Safety Algorithm
+        boolean[] finish = new boolean[n];
+        int[] work = new int[m];
+        System.arraycopy(avail, 0, work, 0, m);
+
+        int[] safeSequence = new int[n];
+        int count = 0;
+
+        boolean safe = true;
+        while (count < n) {
+            boolean found = false;
+
+            for (int i = 0; i < n; i++) {
+                if (!finish[i]) {
+                    int j;
+                    for (j = 0; j < m; j++) {
+                        if (need[i][j] > work[j]) {
+                            break;
+                        }
+                    }
+
+                    if (j == m) { // If all resources are available for process i
+                        for (int k = 0; k < m; k++) {
+                            work[k] += allocated[i][k];
+                        }
+                        safeSequence[count++] = i;
+                        finish[i] = true;
+                        found = true;
+                    }
+                }
+            }
+
+            if (!found) {
+                safe = false;
+                break;
+            }
+        }
+
+        if (safe) {
+            System.out.println("System is in safe state.");
+            System.out.print("Safe sequence is: ");
+            for (int i = 0; i < n; i++) {
+                System.out.print("P" + safeSequence[i] + " ");
+            }
+            System.out.println();
+        } else {
+            System.out.println("System is not in safe state.");
+        }
+
+        sc.close();
+    }
 }
