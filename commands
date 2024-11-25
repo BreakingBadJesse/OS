@@ -1,0 +1,64 @@
+1.	ls Desktop: ls – List Directory Contents
+The ls command is used to list directory contents.
+Syntax: ls [options] [directory]
+
+2.	cd – Change Directory
+The cd command is used to change the current working directory.
+Syntax: cd [directory]
+
+3.	pwd – Print Working Directory
+The pwd command displays the current working directory.
+Syntax: pwd
+4.	mkdir – Make Directory
+The mkdir command is used to create a new directory.
+Syntax: mkdir [directory_name]	
+
+5.	rm – Remove
+The rm command is used to remove files or directories.
+Syntax: rm [options] [file/directory]
+
+6.	touch – Create Empty File
+The touch command is used to create an empty file.
+Syntax: touch [file_name]
+ 
+
+7.	date – Display Date and Time
+The date command displays the current date and time.
+Syntax: date [options]
+
+8.	ps – Process Status
+The ps command displays information about active processes.
+
+Syntax: ps [options]
+ 
+
+
+9. top – Display System Activity
+The top command displays real-time information about system activity.
+Syntax: top
+ 
+
+
+10.	 df – Disk Free
+    The df command displays disk space usage for filesystems.
+    Syntax: df [options]
+
+11.grep – Search
+   The grep command is used to search for patterns in files.
+       Syntax: grep [options] [pattern] [file]
+
+12.mv – Move
+The mv command is used to move files or directories.
+Syntax: mv [options]  [destination]
+
+13. nano – Text Editor
+   The nano command launches the Nano text editor.
+   Syntax: nano [file_name]
+
+14. cat – Concatenate and Display
+   The cat command is used to display the contents of a file.
+   Syntax: cat [file]
+
+15. uname – Print System Information
+   The uname command prints system information such as        kernel version and architecture.
+   Syntax: uname [options]
