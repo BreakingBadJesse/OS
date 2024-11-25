@@ -1,128 +1,84 @@
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
 
-public class PageReplacementAlgorithms {
-
-    // Function for FIFO Page Replacement
-    public static int fifoPageFaults(int[] pages, int frames) {
-        Set<Integer> set = new HashSet<>();
-        Queue<Integer> queue = new LinkedList<>();
-        int pageFaults = 0;
-
-        for (int page : pages) {
-            if (!set.contains(page)) {
-                // Page fault occurs
-                pageFaults++;
-                if (set.size() == frames) {
-                    // Remove the oldest page
-                    int removed = queue.poll();
-                    set.remove(removed);
-                }
-                set.add(page);
-                queue.add(page);
-            }
-        }
-        return pageFaults;
-    }
-
-    // Function for LRU Page Replacement
-    public static int lruPageFaults(int[] pages, int frames) {
-        Set<Integer> set = new HashSet<>();
-        Map<Integer, Integer> lruMap = new HashMap<>();
-        int pageFaults = 0;
-        int time = 0;
-
-        for (int page : pages) {
-            if (!set.contains(page)) {
-                // Page fault occurs
-                pageFaults++;
-                if (set.size() == frames) {
-                    // Find the least recently used page
-                    int lru = Collections.min(lruMap.entrySet(), Map.Entry.comparingByValue()).getKey();
-                    set.remove(lru);
-                    lruMap.remove(lru);
-                }
-                set.add(page);
-            }
-            lruMap.put(page, time++);
-        }
-        return pageFaults;
-    }
-
-    // Function for Optimal Page Replacement
-    public static int optimalPageFaults(int[] pages, int frames) {
-        Set<Integer> set = new HashSet<>();
-        int pageFaults = 0;
-
-        for (int i = 0; i < pages.length; i++) {
-            int page = pages[i];
-
-            if (!set.contains(page)) {
-                // Page fault occurs
-                pageFaults++;
-                if (set.size() == frames) {
-                    // Find the page that won't be used for the longest time in the future
-                    int farthest = i;
-                    int victim = -1;
-                    for (int s : set) {
-                        int nextUse = findNextUse(pages, i, s);
-                        if (nextUse == -1) {
-                            victim = s;
-                            break;
-                        } else if (nextUse > farthest) {
-                            farthest = nextUse;
-                            victim = s;
-                        }
-                    }
-                    set.remove(victim);
-                }
-                set.add(page);
-            }
-        }
-        return pageFaults;
-    }
-
-    // Function to find the next use of a page (for Optimal Algorithm)
-    private static int findNextUse(int[] pages, int currentIndex, int page) {
-        for (int i = currentIndex + 1; i < pages.length; i++) {
-            if (pages[i] == page) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    // Main function to run the algorithms
-    public static void main(String[] args) {
-        Random rd = new Random();
-
+public class Practise {
+    public static void main(String args[]){
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the number of pages in the reference string:");
+        Random rd  = new Random();
+        System.out.println("Enter the no. of pages:");
         int n = sc.nextInt();
+        System.out.println("Enter the no. of frames:");
+        int nFrames = sc.nextInt();
 
-        int[] pages = new int[n];
-        System.out.println("Enter the reference string (space-separated integers):");
-        for (int i = 0; i < n; i++) {
-            pages[i] = rd.nextInt(8);
+        int refString[] = {6, 1, 1, 2, 0, 3, 4, 6, 0, 2, 1, 2, 1, 2, 0, 3, 2, 1,2,0};
+        // for(int i = 0;i < n;i++)
+        //     refString[i] =  rd.nextInt(8);
+        System.out.println(Arrays.toString(refString));
+        System.out.println("Pagefaults in FIFO:"+ FIFO(refString,nFrames));
+        System.out.println("Pagefaults in LRU:"+ LRU(refString,nFrames));
+
+
+    }
+
+    public static int FIFO(int[] refString,int nFrames){
+        int pagefaults = 0;
+        int[] frames = new int[nFrames];
+        Arrays.fill(frames,-1);
+        int index = 0;
+        for(int page: refString){
+            boolean pageFound = false;
+            //check if page is present or not in frame
+            for(int frame:frames){
+                if(frame == page){
+                    pageFound = true;
+                    break;
+                }
+            }
+
+            //if page is not present
+            if(!pageFound){
+                frames[index] = page;
+                index = (index + 1) % nFrames;
+                pagefaults++;
+            }
         }
-        System.out.println(Arrays.toString(pages));
+        return pagefaults;
+    }
 
-        System.out.println("Enter the number of frames:");
-        int frames = sc.nextInt();
+    public static int LRU(int[] refString,int nFrames){
+        int pageFaults = 0;
+        int[] frames = new int[nFrames];
+        int[] lastUsed = new int[nFrames];
+        int time = 0;
+        Arrays.fill(frames, -1); // Initialize frames
+        Arrays.fill(lastUsed, -1); // Initialize usage timestamps
+        for(int page: refString){
+            boolean pageFound = false;
+            //check if page is present in frame 
+            for(int i = 0;i < nFrames;i++){
+                if(frames[i] == page){
+                    pageFound = true;
+                    lastUsed[i] = time++;
+                    break;
+                }
+            }
 
-        System.out.println("FIFO Page Faults: " + fifoPageFaults(pages, frames));
-        System.out.println("LRU Page Faults: " + lruPageFaults(pages, frames));
-        System.out.println("Optimal Page Faults: " + optimalPageFaults(pages, frames));
-
-        sc.close();
+            if(!pageFound){
+                pageFaults++;
+                int lruIndex = -1;
+                //find the lease recently used page
+                int minTime = Integer.MAX_VALUE;
+                for(int i = 0;i < frames.length;i++){
+                    if(lastUsed[i] < minTime){
+                        minTime = lastUsed[i];
+                        lruIndex = i;
+                    }
+                }
+                frames[lruIndex] = page;
+                lastUsed[lruIndex] = time++;
+            }
+        }
+        return pageFaults;
     }
 }
-
